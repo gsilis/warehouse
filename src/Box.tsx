@@ -1,4 +1,4 @@
-import { useCallback, type MouseEventHandler } from "react";
+import { type MouseEventHandler } from "react";
 
 type BoxProps = {
   id: number,
