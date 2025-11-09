@@ -1,0 +1,13 @@
+import { useContext } from "react";
+import { ShelfControl } from "./ShelfControl";
+import { BoxContext } from "./contexts/box-context";
+
+export function Controls() {
+  const boxContext = useContext(BoxContext);
+
+  return <div className="bg-slate-950 flex-[0_500px] flex flex-col justify-center">
+    <ShelfControl id={ 0 } boxes={ boxContext.boxes }>1</ShelfControl>
+    <ShelfControl id={ 1 } boxes={ boxContext.boxes }>2</ShelfControl>
+    <ShelfControl id={ 2 } boxes={ boxContext.boxes }>3</ShelfControl>
+  </div>;
+}
