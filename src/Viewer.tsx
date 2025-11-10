@@ -3,7 +3,7 @@ import { BoxContext } from "./contexts/box-context";
 import { WarehouseScene } from "./warehouse.scene";
 
 export function Viewer() {
-  const elementRef = useRef(null);
+  const elementRef = useRef<HTMLDivElement>(null);
   const boxContext = useContext(BoxContext);
   const scene = useMemo<WarehouseScene>(() => {
     return new WarehouseScene();
@@ -35,5 +35,16 @@ export function Viewer() {
     return () => resizeObserver.unobserve(thisElement);
   }, [resizeObserver]);
 
-  return <div ref={ elementRef } className="bg-blue-500 flex-1">{ boxContext.boxes.join(', ') }</div>
+  useEffect(() => {
+    const ref = elementRef.current;
+    if (!ref) return;
+
+    ref.appendChild(scene.getCanvas());
+  }, [JSON.stringify(boxContext.boxes)]);
+
+  useEffect(() => {
+    scene.start();
+  }, []);
+
+  return <div ref={ elementRef } className="flex-1 overflow-hidden">{ boxContext.boxes.join(', ') }</div>
 }
