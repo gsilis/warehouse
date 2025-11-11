@@ -1,4 +1,4 @@
-import { AmbientLight, Color, Light, Mesh, MeshStandardMaterial, Object3D, PerspectiveCamera, PointLight, Scene, SpotLight, SpotLightHelper, Vector3, WebGLRenderer, type Object3DEventMap } from "three";
+import { AmbientLight, Color, Mesh, MeshStandardMaterial, PerspectiveCamera, PointLight, Scene, SpotLight, SpotLightHelper, Vector3, WebGLRenderer } from "three";
 import { Loader } from "./loader";
 import { OrbitControls, type GLTF } from "three/examples/jsm/Addons.js";
 import { TestBoxManager } from "./test-box-manager";
