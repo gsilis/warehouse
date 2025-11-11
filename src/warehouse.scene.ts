@@ -1,6 +1,7 @@
-import { AmbientLight, Color, PerspectiveCamera, Scene, SpotLight, Vector3, WebGLRenderer } from "three";
+import { AmbientLight, Color, Light, Mesh, MeshStandardMaterial, Object3D, PerspectiveCamera, PointLight, Scene, SpotLight, SpotLightHelper, Vector3, WebGLRenderer, type Object3DEventMap } from "three";
 import { Loader } from "./loader";
 import { OrbitControls, type GLTF } from "three/examples/jsm/Addons.js";
+import { TestBoxManager } from "./test-box-manager";
 
 export class WarehouseScene {
   private renderer: WebGLRenderer;
@@ -12,7 +13,15 @@ export class WarehouseScene {
   private orbitControls: OrbitControls;
   private spot1: SpotLight;
   private spot2: SpotLight;
+  private spot1Helper: SpotLightHelper;
+  private spot2Helper: SpotLightHelper;
   private boxes: boolean[] = [];
+  private _lightHelpersEnabled: boolean = false;
+  private _sceneSetup = false;
+  private _boxSetup = false;
+  private _boxMesh?: Mesh;
+  private _testBoxEnabled: boolean = false;
+  private _testBox: TestBoxManager;
 
   constructor() {
     this.renderer = new WebGLRenderer({ antialias: true });
@@ -24,19 +33,21 @@ export class WarehouseScene {
     this.camera.rotateY(0.4141117780464906);
     this.camera.rotateZ(0.12620688296863003);
     this.scene = new Scene();
-    this.ambient = new AmbientLight((new Color()).setHex(0xFFFFFF), 0.2);
+    this.ambient = new AmbientLight((new Color()).setHex(0xFFFFFF), 1);
     this.orbitControls = new OrbitControls(this.camera, this.renderer.domElement);
     this.spot1 = new SpotLight((new Color()).setHex(0xFFFFFF), 50, 0, 0.8, 0.9, 2);
     this.spot2 = new SpotLight((new Color()).setHex(0xFFFFFF), 50, 0, 0.8, 0.9, 2);
 
-    this.spot1.castShadow = true;
-    this.spot2.castShadow = true;
-    this.spot1.shadow.mapSize.width = 8192;
-    this.spot1.shadow.mapSize.height = 8192;
-    this.spot2.shadow.mapSize.width = 8192;
-    this.spot2.shadow.mapSize.height = 8192;
+    this.spot1Helper = new SpotLightHelper(this.spot1, (new Color()).setHex(0xFFFF00));
+    this.spot2Helper = new SpotLightHelper(this.spot2, (new Color()).setHex(0xFFFF00));
+
+    this.spot1.shadow.mapSize.width = 2048;
+    this.spot1.shadow.mapSize.height = 2048;
+    this.spot2.shadow.mapSize.width = 2048;
+    this.spot2.shadow.mapSize.height = 2048;
 
     this.scene.add(this.ambient);
+    this._testBox = new TestBoxManager(this.scene);
   }
 
   setDimensions(width: number, height: number) {
@@ -60,39 +71,100 @@ export class WarehouseScene {
     this.renderer.render(this.scene, this.camera);
   }
 
+  get lightHelpersEnabled() {
+    return this._lightHelpersEnabled;
+  }
+
+  set lightHelpersEnabled(value: boolean) {
+    const oldValue = this._lightHelpersEnabled;
+    this._lightHelpersEnabled = value;
+
+    if (oldValue === value) {
+      // No change
+      return;
+    }
+
+    if (value) {
+      this.scene.add(this.spot1Helper);
+      this.scene.add(this.spot2Helper);
+
+      this.spot1Helper.update();
+      this.spot1Helper.update();
+    } else {
+      this.scene.remove(this.spot1Helper);
+      this.scene.remove(this.spot2Helper);
+    }
+  }
+
+  get testBoxEnabled() {
+    return this._testBoxEnabled;
+  }
+
+  set testBoxEnabled(value: boolean) {
+    const old = this._testBoxEnabled;
+    this._testBoxEnabled = value;
+
+    if (old === value) {
+      return;
+    }
+
+    if (value) {
+      this._testBox.setup();
+    } else {
+      this._testBox.teardown();
+    }
+  }
+
   private onSceneLoad(data: GLTF) {
+    if (this._sceneSetup) {
+      return;
+    }
+
+    this._sceneSetup = true;
     this.scene.add(data.scene);
 
-    data.scene.children.forEach(c => {
-      c.castShadow = true;
-      c.receiveShadow = true;
-    });
+    const spotlight1Placeholder = data.scene.getObjectByName('light-1-placeholder') as Mesh;
+    const spotlight2Placeholder = data.scene.getObjectByName('light-2-placeholder') as Mesh;
 
-    const spotlight1Placeholder = data.scene.getObjectByName('light-1-placeholder');
-    const spotlight2Placeholder = data.scene.getObjectByName('light-2-placeholder');
-
-    const settings: [SpotLight, Vector3 | undefined][] = [
-      [this.spot1, spotlight1Placeholder?.position],
-      [this.spot2, spotlight2Placeholder?.position]
+    const settings: [SpotLight | PointLight, Mesh | undefined, Vector3 | undefined][] = [
+      [this.spot1, spotlight1Placeholder, spotlight1Placeholder?.position],
+      [this.spot2, spotlight2Placeholder, spotlight2Placeholder?.position],
     ];
 
-    settings.forEach(([light, position]) => {
+    settings.forEach(([light, object, position]) => {
       if (!position) return;
 
-      light.position.set(position.x, position.y, position.z);
-      light.target.position.set(position.x, 0, position.z);
+      const material = object?.material as MeshStandardMaterial;
+      if (material) {
+        material.emissive = (new Color()).setHex(0xFFFFFF);
+        material.emissiveIntensity = 10;
+      }
+
+      light.position.set(position.x, position.y - 0.4, position.z);
+      if ('target' in light) {
+        light.target.position.set(position.x, 0, position.z);
+        light.target.updateMatrixWorld();
+      }
       this.scene.add(light);
     });
+
+    this.spot1Helper.update();
+    this.spot2Helper.update();
   }
 
   private onBoxLoad(data: GLTF) {
-    const objects = data.scene.children;
+    if (this._boxSetup) {
+      return;
+    }
 
-    objects.forEach(o => {
-      o.position.y = 5;
-      o.castShadow = true;
-      o.receiveShadow = true;
-      this.scene.add(o);
-    });
+    this._boxSetup = true;
+    this._boxMesh = data.scene.getObjectByName('moving-box') as Mesh;
+
+    if (!this._boxMesh) {
+      console.error(`Could not locate 'moving-box' object within box assets.`);
+      return;
+    }
+
+    this._testBox.box = this._boxMesh;
   }
 }

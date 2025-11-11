@@ -1,6 +1,7 @@
 import { useContext, useEffect, useMemo, useRef } from "react"
 import { BoxContext } from "./contexts/box-context";
 import { WarehouseScene } from "./warehouse.scene";
+import { WorldSettingsContext } from "./contexts/world-settings-context";
 
 export function Viewer() {
   const elementRef = useRef<HTMLDivElement>(null);
@@ -8,6 +9,7 @@ export function Viewer() {
   const scene = useMemo<WarehouseScene>(() => {
     return new WarehouseScene();
   }, []);
+  const settingsContext = useContext(WorldSettingsContext);
   const resizeObserver = useMemo<ResizeObserver>(() => {
     return new ResizeObserver((es) => {
       for (const e of es) {
@@ -41,6 +43,14 @@ export function Viewer() {
 
     ref.appendChild(scene.getCanvas());
   }, [JSON.stringify(boxContext.boxes)]);
+
+  useEffect(() => {
+    scene.lightHelpersEnabled = settingsContext.lightHelpers;
+  }, [settingsContext.lightHelpers, scene]);
+
+  useEffect(() => {
+    scene.testBoxEnabled = settingsContext.testCube;
+  }, [settingsContext.testCube, scene]);
 
   useEffect(() => {
     scene.start();
