@@ -1,5 +1,5 @@
 import { useContext, useEffect, useMemo, useRef } from "react"
-import { BoxContext } from "./contexts/box-context";
+import { BoxContext, SHELF_COLUMNS, SHELF_ROWS } from "./contexts/box-context";
 import { WarehouseScene } from "./warehouse.scene";
 import { WorldSettingsContext } from "./contexts/world-settings-context";
 
@@ -7,7 +7,7 @@ export function Viewer() {
   const elementRef = useRef<HTMLDivElement>(null);
   const boxContext = useContext(BoxContext);
   const scene = useMemo<WarehouseScene>(() => {
-    return new WarehouseScene();
+    return new WarehouseScene(SHELF_ROWS, SHELF_COLUMNS);
   }, []);
   const settingsContext = useContext(WorldSettingsContext);
   const resizeObserver = useMemo<ResizeObserver>(() => {
@@ -42,6 +42,7 @@ export function Viewer() {
     if (!ref) return;
 
     ref.appendChild(scene.getCanvas());
+    scene.updateBoxes(boxContext.boxes);
   }, [JSON.stringify(boxContext.boxes)]);
 
   useEffect(() => {

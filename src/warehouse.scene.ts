@@ -2,6 +2,7 @@ import { AmbientLight, Color, Light, Mesh, MeshStandardMaterial, Object3D, Persp
 import { Loader } from "./loader";
 import { OrbitControls, type GLTF } from "three/examples/jsm/Addons.js";
 import { TestBoxManager } from "./test-box-manager";
+import { BoxManager } from "./box-manager";
 
 export class WarehouseScene {
   private renderer: WebGLRenderer;
@@ -15,15 +16,15 @@ export class WarehouseScene {
   private spot2: SpotLight;
   private spot1Helper: SpotLightHelper;
   private spot2Helper: SpotLightHelper;
-  private boxes: boolean[] = [];
   private _lightHelpersEnabled: boolean = false;
   private _sceneSetup = false;
   private _boxSetup = false;
   private _boxMesh?: Mesh;
   private _testBoxEnabled: boolean = false;
   private _testBox: TestBoxManager;
+  private _boxManager: BoxManager;
 
-  constructor() {
+  constructor(rows: number, columns: number) {
     this.renderer = new WebGLRenderer({ antialias: true });
     this.sceneLoader = new Loader('/warehouse.glb');
     this.boxLoader = new Loader('/box.glb');
@@ -48,6 +49,7 @@ export class WarehouseScene {
 
     this.scene.add(this.ambient);
     this._testBox = new TestBoxManager(this.scene);
+    this._boxManager = new BoxManager(this.scene, rows, columns);
   }
 
   setDimensions(width: number, height: number) {
@@ -115,6 +117,10 @@ export class WarehouseScene {
     }
   }
 
+  updateBoxes(boxes: boolean[]) {
+    this._boxManager.updateBoxes(boxes);
+  }
+
   private onSceneLoad(data: GLTF) {
     if (this._sceneSetup) {
       return;
@@ -166,5 +172,6 @@ export class WarehouseScene {
     }
 
     this._testBox.box = this._boxMesh;
+    this._boxManager.asset = this._boxMesh;
   }
 }
