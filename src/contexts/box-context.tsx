@@ -4,7 +4,7 @@ export const SHELF_ROWS = 2;
 export const SHELF_COLUMNS = 5;
 
 type BoxContextShape = {
-  boxes: boolean[],
+  boxes: number[],
   toggleBox: (row: number, col: number, state: boolean) => void,
 };
 
@@ -14,14 +14,16 @@ export const BoxContext = createContext<BoxContextShape>({
 });
 
 export function BoxProvider({ children }: { children: any }) {
-  const [boxes, setBoxes] = useState<boolean[]>([]);
-  const toggleBox = useCallback((row: number, col: number, state: boolean) => {
+  const [boxes, setBoxes] = useState<number[]>([]);
+  const toggleBox = useCallback((row: number, col: number) => {
     const index = ((SHELF_COLUMNS * SHELF_ROWS) * row) + col;
-    setBoxes(oldBoxes => {
-      const newArray = [...oldBoxes];
-      newArray[index] = state;
 
-      return newArray;
+    setBoxes(oldBoxes => {
+      if (oldBoxes.indexOf(index) > -1) {
+        return oldBoxes.filter(b => b !== index);
+      } else {
+        return [...oldBoxes, index];
+      }
     });
   }, [setBoxes]);
 

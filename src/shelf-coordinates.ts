@@ -1,8 +1,12 @@
-import { Vector2, type Vector3 } from "three";
+import { Vector2, Vector3 } from "three";
 
 type VectorGeneratingFunction = (staticDim: number, point: Vector2) => Vector3;
 
 export class ShelfCoordinates {
+  static createBlank(): ShelfCoordinates {
+    return new ShelfCoordinates(0, new Vector2(0, 0), new Vector2(0, 0), new Vector2(0, 0), () => new Vector3(0, 0, 0));
+  }
+
   private staticDim: number;
   private startPoint: Vector2;
   private endPoint: Vector2;

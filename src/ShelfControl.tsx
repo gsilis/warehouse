@@ -16,7 +16,7 @@ const containerClassName = [
 
 type ShelfControlProps = {
   id: number,
-  boxes?: boolean[],
+  boxes?: number[],
   children?: any,
 };
 
@@ -36,7 +36,7 @@ export function ShelfControl({
     <div className={ containerClassName }>
       { turns.map((_, index) => {
         const boxIndex = ((SHELF_COLUMNS * SHELF_ROWS) * id) + index;
-        const state = !!boxes[boxIndex] || false;
+        const state = boxes.includes(boxIndex);
 
         return <Box id={ index + 1 } key={ index } onToggle={ (state) => onToggle(index, state) } occupied={ state } />;
       }) }

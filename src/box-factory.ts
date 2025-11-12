@@ -1,7 +1,13 @@
-import type { Mesh } from "three";
-import type { ShelfCoordinates } from "./shelf-coordinates";
+import { Mesh } from "three";
+import { ShelfCoordinates } from "./shelf-coordinates";
 
 export class BoxFactory {
+  static createBlank(): BoxFactory {
+    const mesh = new Mesh();
+    const blankCoordinates = ShelfCoordinates.createBlank();
+    return new BoxFactory(mesh, blankCoordinates);
+  }
+
   private mesh: Mesh;
   private coordinates: ShelfCoordinates;
 

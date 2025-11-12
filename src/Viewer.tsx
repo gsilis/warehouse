@@ -57,5 +57,5 @@ export function Viewer() {
     scene.start();
   }, []);
 
-  return <div ref={ elementRef } className="flex-1 overflow-hidden">{ boxContext.boxes.join(', ') }</div>
+  return <div ref={ elementRef } className="flex-1 overflow-hidden"></div>
 }
