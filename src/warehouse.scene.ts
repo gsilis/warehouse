@@ -24,7 +24,7 @@ export class WarehouseScene {
   private _testBox: TestBoxManager;
   private _boxManager: BoxManager;
 
-  constructor(rows: number, columns: number) {
+  constructor(rows: number, columns: number, indices: number[] = []) {
     this.renderer = new WebGLRenderer({ antialias: true });
     this.sceneLoader = new Loader('/warehouse.glb');
     this.boxLoader = new Loader('/box.glb');
@@ -49,7 +49,7 @@ export class WarehouseScene {
 
     this.scene.add(this.ambient);
     this._testBox = new TestBoxManager(this.scene);
-    this._boxManager = new BoxManager(this.scene, rows, columns);
+    this._boxManager = new BoxManager(this.scene, rows, columns, indices);
   }
 
   setDimensions(width: number, height: number) {
@@ -117,7 +117,7 @@ export class WarehouseScene {
     }
   }
 
-  updateBoxes(boxes: boolean[]) {
+  updateBoxes(boxes: number[]) {
     this._boxManager.updateBoxes(boxes);
   }
 

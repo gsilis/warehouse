@@ -20,4 +20,8 @@ export class ShelfResourceManager<T> {
 
     return this.shelves[shelf] || this.blankResource;    
   }
+
+  get shelfCount(): number {
+    return this.shelves.length;
+  }
 }

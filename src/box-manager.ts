@@ -3,23 +3,31 @@ import { BoxFactory } from "./box-factory";
 import { ShelfCoordinateFactory } from "./shelf-coordinate-factory";
 import { SHELF_COLUMNS, SHELF_ROWS } from "./contexts/box-context";
 import { ShelfResourceManager } from "./shelf-resource-manager";
-import { change } from "./utilities/array";
+import { CoordinateTranslator } from "./coordinate-translator";
 
 export class BoxManager {
   private _boxAsset?: Mesh;
   private _scene: Scene;
   private _rows: number;
   private _columns: number;
-  private _cachedBoxes: Mesh[] = [];
+  private _cachedBoxes: Record<number, Mesh> = {};
+  private _indices: number[] = [];
   private _shelfResourceManager: ShelfResourceManager<BoxFactory>;
   private _shelfCoordinateFactory: ShelfCoordinateFactory;
+  private _coordinates: CoordinateTranslator;
 
-  constructor(scene: Scene, rows: number, columns: number) {
+  constructor(scene: Scene, rows: number, columns: number, initialIndices: number[] = []) {
     this._scene = scene;
     this._rows = rows;
     this._columns = columns;
     this._shelfCoordinateFactory = new ShelfCoordinateFactory();
     this._shelfResourceManager = new ShelfResourceManager<BoxFactory>(rows, columns, BoxFactory.createBlank());
+    this._coordinates = new CoordinateTranslator(this._rows, this._columns);
+
+    console.log('INITIAL INDICES', initialIndices);
+    if (initialIndices.length > 0) {
+      this.updateBoxes(initialIndices);
+    }
   }
 
   get asset(): Mesh | undefined {
@@ -55,6 +63,35 @@ export class BoxManager {
   }
 
   updateBoxes(newBoxes: number[]) {
-    console.log(newBoxes);
+    const [indicesToAdd, indicesToRemove] = [...newBoxes, ...this._indices].reduce<[number[], number[]]>((arr, index) => {
+      const inNewValue = newBoxes.includes(index);
+      const inOldValue = this._indices.includes(index);
+
+      if (inNewValue && inOldValue) {
+      } else if (inNewValue) {
+        arr[0].push(index);
+      } else if (inOldValue) {
+        arr[1].push(index);
+      }
+
+      return arr;
+    }, [[], []]);
+
+    indicesToRemove.forEach((index) => {
+      const box = this._cachedBoxes[index];
+      delete this._cachedBoxes[index];
+      this._scene.remove(box);
+    });
+
+    indicesToAdd.forEach((index) => {
+      const boxFactory = this._shelfResourceManager.shelfFor(index);
+      const coordinates = this._coordinates.xyFor(index);
+      const box = boxFactory.create(coordinates.x, coordinates.y);
+      this._cachedBoxes[index] = box;
+
+      this._scene.add(box);
+    });
+
+    this._indices = [ ...newBoxes ];
   }
 }
