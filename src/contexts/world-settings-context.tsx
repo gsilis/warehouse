@@ -1,6 +1,6 @@
 import { createContext, useCallback, useState } from "react";
 
-type SettingsShape = {
+export type SettingsShape = {
   lightHelpers: boolean,
   testCube: boolean,
   planeHelpers: boolean,
@@ -28,6 +28,7 @@ export function WorldSettingsProvider({ children }: { children: any }) {
     planeHelpers: false,
   });
   const update = useCallback((key: keyof SettingsShape, value: boolean) => {
+    console.log(key, value);
     updateSettings((o) => {
       return {
         ...o,
