@@ -16,18 +16,13 @@ export class BoxManager {
   private _shelfCoordinateFactory: ShelfCoordinateFactory;
   private _coordinates: CoordinateTranslator;
 
-  constructor(scene: Scene, rows: number, columns: number, initialIndices: number[] = []) {
+  constructor(scene: Scene, rows: number, columns: number) {
     this._scene = scene;
     this._rows = rows;
     this._columns = columns;
     this._shelfCoordinateFactory = new ShelfCoordinateFactory();
     this._shelfResourceManager = new ShelfResourceManager<BoxFactory>(rows, columns, BoxFactory.createBlank());
     this._coordinates = new CoordinateTranslator(this._rows, this._columns);
-
-    console.log('INITIAL INDICES', initialIndices);
-    if (initialIndices.length > 0) {
-      this.updateBoxes(initialIndices);
-    }
   }
 
   get asset(): Mesh | undefined {
@@ -86,9 +81,10 @@ export class BoxManager {
     indicesToAdd.forEach((index) => {
       const boxFactory = this._shelfResourceManager.shelfFor(index);
       const coordinates = this._coordinates.xyFor(index);
-      const box = boxFactory.create(coordinates.x, coordinates.y);
+      const box = boxFactory.create(coordinates.y, coordinates.x);
       this._cachedBoxes[index] = box;
 
+      console.log('Adding box to scene', coordinates, index, box.position);
       this._scene.add(box);
     });
 

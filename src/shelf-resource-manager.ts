@@ -16,7 +16,7 @@ export class ShelfResourceManager<T> {
 
   shelfFor(index: number): T {
     const shelfSize = this.rows * this.columns;
-    const shelf = index % shelfSize;
+    const shelf = Math.floor(index / shelfSize);
 
     return this.shelves[shelf] || this.blankResource;    
   }

@@ -19,10 +19,11 @@ export class CoordinateTranslator {
 
   xyFor(index: number): Vector2 {
     const indicesPerShelf = this.rows * this.columns;
-    const shelfIndex = index - (index % indicesPerShelf);
-    const col = shelfIndex % this.columns;
-    const row = shelfIndex - col;
+    const shelf = Math.floor(index / indicesPerShelf);
+    const col = (index - shelf) % this.columns;
+    const row = Math.floor((index - (shelf * indicesPerShelf)) / this.columns);
+    console.log(`${index} -> [${shelf}, ${row}, ${col}]`);
 
-    return new Vector2(row, col);
+    return new Vector2(col, row);
   }
 }

@@ -24,7 +24,9 @@ export class WarehouseScene {
   private _testBox: TestBoxManager;
   private _boxManager: BoxManager;
 
-  constructor(rows: number, columns: number, indices: number[] = []) {
+  private _INITIAL_LOAD = false;
+
+  constructor(rows: number, columns: number) {
     this.renderer = new WebGLRenderer({ antialias: true });
     this.sceneLoader = new Loader('/warehouse.glb');
     this.boxLoader = new Loader('/box.glb');
@@ -36,8 +38,8 @@ export class WarehouseScene {
     this.scene = new Scene();
     this.ambient = new AmbientLight((new Color()).setHex(0xFFFFFF), 1);
     this.orbitControls = new OrbitControls(this.camera, this.renderer.domElement);
-    this.spot1 = new SpotLight((new Color()).setHex(0xFFFFFF), 50, 0, 0.8, 0.9, 2);
-    this.spot2 = new SpotLight((new Color()).setHex(0xFFFFFF), 50, 0, 0.8, 0.9, 2);
+    this.spot1 = new SpotLight((new Color()).setHex(0xFFFFFF), 150, 0, 0.8, 0.9, 2);
+    this.spot2 = new SpotLight((new Color()).setHex(0xFFFFFF), 150, 0, 0.8, 0.9, 2);
 
     this.spot1Helper = new SpotLightHelper(this.spot1, (new Color()).setHex(0xFFFF00));
     this.spot2Helper = new SpotLightHelper(this.spot2, (new Color()).setHex(0xFFFF00));
@@ -49,7 +51,9 @@ export class WarehouseScene {
 
     this.scene.add(this.ambient);
     this._testBox = new TestBoxManager(this.scene);
-    this._boxManager = new BoxManager(this.scene, rows, columns, indices);
+    this._boxManager = new BoxManager(this.scene, rows, columns);
+
+    this.renderer.shadowMap.enabled = true;
   }
 
   setDimensions(width: number, height: number) {
@@ -118,7 +122,15 @@ export class WarehouseScene {
   }
 
   updateBoxes(boxes: number[]) {
-    this._boxManager.updateBoxes(boxes);
+    // This is a dirty implementation, clean this up later on
+    if (this._INITIAL_LOAD) {
+      this._boxManager.updateBoxes(boxes);
+    } else {
+      setTimeout(() => {
+        this._boxManager.updateBoxes(boxes);
+        this._INITIAL_LOAD = true;
+      }, 1000);
+    }
   }
 
   private onSceneLoad(data: GLTF) {
@@ -137,6 +149,11 @@ export class WarehouseScene {
       [this.spot2, spotlight2Placeholder, spotlight2Placeholder?.position],
     ];
 
+    data.scene.children.forEach((object) => {
+      object.receiveShadow = true;
+      object.occlusionTest = true;
+    });
+
     settings.forEach(([light, object, position]) => {
       if (!position) return;
 
@@ -148,6 +165,9 @@ export class WarehouseScene {
 
       light.position.set(position.x, position.y - 0.4, position.z);
       if ('target' in light) {
+        light.castShadow = true;
+        light.shadow.mapSize.setX(2048);
+        light.shadow.mapSize.setY(2048);
         light.target.position.set(position.x, 0, position.z);
         light.target.updateMatrixWorld();
       }
@@ -171,6 +191,8 @@ export class WarehouseScene {
       return;
     }
 
+    this._boxMesh.receiveShadow = true;
+    this._boxMesh.castShadow = true;
     this._testBox.box = this._boxMesh;
     this._boxManager.asset = this._boxMesh;
   }
