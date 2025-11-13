@@ -54,6 +54,10 @@ export function Viewer() {
   }, [settingsContext.testCube, scene]);
 
   useEffect(() => {
+    scene.shelfHelpersEnabled = settingsContext.planeHelpers;
+  }, [settingsContext.planeHelpers, scene]);
+
+  useEffect(() => {
     scene.start();
   }, []);
 

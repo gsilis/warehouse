@@ -18,5 +18,8 @@ export function Controls() {
     <button onClick={ settingsContext.toggleTestCube } className="p-1 mx-3 my-1 border-1 border-sky-400/40 rounded-md text-sky-400 cursor-pointer hover:border-sky-400/80 duration-300 transition-all">
       { settingsContext.testCube ? 'Disable Test Cube' : 'Enable Test Cube' }
     </button>
+    <button onClick={ settingsContext.togglePlaneHelpers } className="p-1 mx-3 my-1 border-1 border-sky-400/40 rounded-md text-sky-400 cursor-pointer hover:border-sky-400/80 duration-300 transition-all">
+      { settingsContext.planeHelpers ? 'Disable Plane Helpers' : 'Enable Plane Helpers' }
+    </button>
   </div>;
 }

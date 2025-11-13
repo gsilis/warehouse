@@ -125,6 +125,14 @@ export class WarehouseScene {
     }
   }
 
+  get shelfHelpersEnabled() {
+    return this._boxManager.shelfHelpers;
+  }
+
+  set shelfHelpersEnabled(value: boolean) {
+    this._boxManager.shelfHelpers = value;
+  }
+
   updateBoxes(boxes: number[]) {
     // This is a dirty implementation, clean this up later on
     if (this._INITIAL_LOAD) {

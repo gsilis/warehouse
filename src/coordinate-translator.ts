@@ -22,7 +22,6 @@ export class CoordinateTranslator {
     const shelf = Math.floor(index / indicesPerShelf);
     const col = (index - shelf) % this.columns;
     const row = Math.floor((index - (shelf * indicesPerShelf)) / this.columns);
-    console.log(`${index} -> [${shelf}, ${row}, ${col}]`);
 
     return new Vector2(col, row);
   }

@@ -1,4 +1,4 @@
-import { Plane, PlaneHelper, Vector2, Vector3 } from "three";
+import { BoxGeometry, BoxHelper, Color, Mesh, Plane, PlaneGeometry, PlaneHelper, Vector2, Vector3 } from "three";
 
 type VectorGeneratingFunction = (staticDim: number, point: Vector2) => Vector3;
 
@@ -40,9 +40,19 @@ export class ShelfCoordinates {
     return this.toVector(this.staticDim, point);
   }
 
-  // getPlane(): [Plane, PlaneHelper] {
-  //   const plane = new Plane(new Vector3(this.startPoint.x, this.staticDim, this.startPoint.y));
-  // }
+  getPlane(): [Mesh, BoxHelper] {
+    const width = Math.abs(this.startPoint.x - this.endPoint.x);
+    const height = Math.abs(this.startPoint.y - this.endPoint.y);
+    const midPointX = width / 2;
+    const midPointY = height / 2;
+
+    const planeGeometry = new BoxGeometry(width, 1, height);
+    const plane = new Mesh(planeGeometry);
+    plane.position.set(this.startPoint.x + midPointX, this.staticDim, this.startPoint.y + midPointY);
+    const planeHelper = new BoxHelper(plane, 0xFF0000);
+
+    return [plane, planeHelper];
+  }
 
   private calculateUnits() {
     this.xStep = Math.abs((this.startPoint.x - this.endPoint.x) / this.units.x);

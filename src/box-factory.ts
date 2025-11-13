@@ -20,12 +20,14 @@ export class BoxFactory {
     const clone = this.mesh.clone();
     const position = this.coordinates.pointFor(x, y);
 
-    console.log('BoxFactory.create', [x, y], position);
-
     clone.position.x = position.x;
     clone.position.y = position.y;
     clone.position.z = position.z;
 
     return clone;
+  }
+
+  getPlane() {
+    return this.coordinates.getPlane();
   }
 }

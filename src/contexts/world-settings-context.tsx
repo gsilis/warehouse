@@ -3,11 +3,13 @@ import { createContext, useState } from "react";
 type SettingsShape = {
   lightHelpers: boolean,
   testCube: boolean,
+  planeHelpers: boolean,
 };
 
 type WorldSettingsContextShape = SettingsShape & {
   toggleLightHelpers: () => void,
   toggleTestCube: () => void,
+  togglePlaneHelpers: () => void,
 };
 
 export const WorldSettingsContext = createContext<WorldSettingsContextShape>({
@@ -16,12 +18,16 @@ export const WorldSettingsContext = createContext<WorldSettingsContextShape>({
 
   testCube: false,
   toggleTestCube: () => {},
+
+  planeHelpers: false,
+  togglePlaneHelpers: () => {},
 });
 
 export function WorldSettingsProvider({ children }: { children: any }) {
   const [settings, updateSettings] = useState<SettingsShape>({
     lightHelpers: false,
     testCube: false,
+    planeHelpers: false,
   });
 
   const toggleLightHelpers = () => {
@@ -30,6 +36,9 @@ export function WorldSettingsProvider({ children }: { children: any }) {
   const toggleTestCube = () => {
     updateSettings(o => ({ ...o, testCube: !o.testCube }));
   };
+  const togglePlaneHelpers = () => {
+    updateSettings(o => ({ ...o, planeHelpers: !o.planeHelpers }));
+  };
 
   const combinedSettings: WorldSettingsContextShape = {
     lightHelpers: settings.lightHelpers,
@@ -37,6 +46,9 @@ export function WorldSettingsProvider({ children }: { children: any }) {
 
     testCube: settings.testCube,
     toggleTestCube,
+
+    planeHelpers: settings.planeHelpers,
+    togglePlaneHelpers,
   };
 
   return (

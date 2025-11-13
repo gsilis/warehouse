@@ -1,4 +1,4 @@
-import { Vector2, type Mesh, type Scene } from "three";
+import { BoxHelper, Plane, PlaneHelper, Vector2, type Mesh, type Scene } from "three";
 import { BoxFactory } from "./box-factory";
 import { ShelfCoordinateFactory } from "./shelf-coordinate-factory";
 import { SHELF_COLUMNS, SHELF_ROWS } from "./contexts/box-context";
@@ -15,6 +15,8 @@ export class BoxManager {
   private _shelfResourceManager: ShelfResourceManager<BoxFactory>;
   private _shelfCoordinateFactory: ShelfCoordinateFactory;
   private _coordinates: CoordinateTranslator;
+  private _shelfHelpers: boolean = false;
+  private _shelfHelperObjects: BoxHelper[] = [];
 
   constructor(scene: Scene, rows: number, columns: number) {
     this._scene = scene;
@@ -57,6 +59,29 @@ export class BoxManager {
     );
   }
 
+  get shelfHelpers() {
+    return this._shelfHelpers;
+  }
+
+  set shelfHelpers(value: boolean) {
+    const old = this._shelfHelpers;
+    this._shelfHelpers = value;
+
+    if (old === value) return;
+    if (value) {
+      this._shelfResourceManager.all().forEach((object) => {
+        const [_, planeHelper] = object.getPlane();
+        this._scene.add(planeHelper);
+        this._shelfHelperObjects.push(planeHelper);
+      });
+    } else {
+      this._shelfHelperObjects.forEach((object) => {
+        this._scene.remove(object);
+      });
+      this._shelfHelperObjects = [];
+    }
+  }
+
   updateBoxes(newBoxes: number[]) {
     const [indicesToAdd, indicesToRemove] = [...newBoxes, ...this._indices].reduce<[number[], number[]]>((arr, index) => {
       const inNewValue = newBoxes.includes(index);
@@ -84,7 +109,6 @@ export class BoxManager {
       const box = boxFactory.create(coordinates.y, coordinates.x);
       this._cachedBoxes[index] = box;
 
-      console.log('Adding box to scene', coordinates, index, box.position);
       this._scene.add(box);
     });
 
