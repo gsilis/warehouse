@@ -1,65 +1,7 @@
-import { useContext, useEffect, useMemo, useRef } from "react"
-import { BoxContext, SHELF_COLUMNS, SHELF_ROWS } from "./contexts/box-context";
-import { WarehouseScene } from "./warehouse.scene";
-import { WorldSettingsContext } from "./contexts/world-settings-context";
+import { useRef } from "react"
 
 export function Viewer() {
   const elementRef = useRef<HTMLDivElement>(null);
-  const boxContext = useContext(BoxContext);
-  const scene = useMemo<WarehouseScene>(() => {
-    return new WarehouseScene(SHELF_ROWS, SHELF_COLUMNS);
-  }, []);
-  const settingsContext = useContext(WorldSettingsContext);
-  const resizeObserver = useMemo<ResizeObserver>(() => {
-    return new ResizeObserver((es) => {
-      for (const e of es) {
-        if (!e.contentRect) {
-          return;
-        }
-
-        scene.setDimensions(e.contentRect.width, e.contentRect.height);
-      }
-    });
-  }, [scene]);
-
-  useEffect(() => {
-    if (!elementRef.current) {
-      return;
-    }
-
-    // Dunno if this gets hoisted above the if block,
-    // but this makes cleanup via the returned
-    // function easier.
-    const thisElement = elementRef.current;
-
-    resizeObserver.observe(thisElement);
-
-    return () => resizeObserver.unobserve(thisElement);
-  }, [resizeObserver]);
-
-  useEffect(() => {
-    const ref = elementRef.current;
-    if (!ref) return;
-
-    ref.appendChild(scene.getCanvas());
-    scene.updateBoxes(boxContext.boxes);
-  }, [JSON.stringify(boxContext.boxes)]);
-
-  useEffect(() => {
-    scene.lightHelpersEnabled = settingsContext.lightHelpers;
-  }, [settingsContext.lightHelpers, scene]);
-
-  useEffect(() => {
-    scene.testBoxEnabled = settingsContext.testCube;
-  }, [settingsContext.testCube, scene]);
-
-  useEffect(() => {
-    scene.shelfHelpersEnabled = settingsContext.planeHelpers;
-  }, [settingsContext.planeHelpers, scene]);
-
-  useEffect(() => {
-    scene.start();
-  }, []);
 
   return <div ref={ elementRef } className="flex-1 overflow-hidden"></div>
 }

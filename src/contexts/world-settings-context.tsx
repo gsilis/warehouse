@@ -1,4 +1,4 @@
-import { createContext, useState } from "react";
+import { createContext, useCallback, useState } from "react";
 
 type SettingsShape = {
   lightHelpers: boolean,
@@ -6,21 +6,19 @@ type SettingsShape = {
   planeHelpers: boolean,
 };
 
+const defaultSettings: SettingsShape = {
+  lightHelpers: false,
+  testCube: false,
+  planeHelpers: false,
+};
+
 type WorldSettingsContextShape = SettingsShape & {
-  toggleLightHelpers: () => void,
-  toggleTestCube: () => void,
-  togglePlaneHelpers: () => void,
+  update: (key: keyof SettingsShape, value: boolean) => void,
 };
 
 export const WorldSettingsContext = createContext<WorldSettingsContextShape>({
-  lightHelpers: false,
-  toggleLightHelpers: () => {},
-
-  testCube: false,
-  toggleTestCube: () => {},
-
-  planeHelpers: false,
-  togglePlaneHelpers: () => {},
+  update: () => {},
+  ...defaultSettings,
 });
 
 export function WorldSettingsProvider({ children }: { children: any }) {
@@ -29,26 +27,20 @@ export function WorldSettingsProvider({ children }: { children: any }) {
     testCube: false,
     planeHelpers: false,
   });
-
-  const toggleLightHelpers = () => {
-    updateSettings((old) => ({ ...old, lightHelpers: !old.lightHelpers }));
-  };
-  const toggleTestCube = () => {
-    updateSettings(o => ({ ...o, testCube: !o.testCube }));
-  };
-  const togglePlaneHelpers = () => {
-    updateSettings(o => ({ ...o, planeHelpers: !o.planeHelpers }));
-  };
+  const update = useCallback((key: keyof SettingsShape, value: boolean) => {
+    updateSettings((o) => {
+      return {
+        ...o,
+        [key]: value,
+      };
+    });
+  }, [updateSettings]);
 
   const combinedSettings: WorldSettingsContextShape = {
     lightHelpers: settings.lightHelpers,
-    toggleLightHelpers,
-
     testCube: settings.testCube,
-    toggleTestCube,
-
     planeHelpers: settings.planeHelpers,
-    togglePlaneHelpers,
+    update,
   };
 
   return (
