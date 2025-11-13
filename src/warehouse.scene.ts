@@ -1,8 +1,9 @@
-import { AmbientLight, Color, Mesh, MeshStandardMaterial, PerspectiveCamera, PointLight, Scene, SpotLight, SpotLightHelper, Vector3, WebGLRenderer } from "three";
+import { AmbientLight, Color, Mesh, MeshStandardMaterial, PCFSoftShadowMap, PerspectiveCamera, PointLight, Scene, SpotLight, SpotLightHelper, Vector3, WebGLRenderer } from "three";
 import { Loader } from "./loader";
 import { OrbitControls, type GLTF } from "three/examples/jsm/Addons.js";
 import { TestBoxManager } from "./test-box-manager";
 import { BoxManager } from "./box-manager";
+import { enableShadowsForGroup } from "./utilities/shadows";
 
 export class WarehouseScene {
   private renderer: WebGLRenderer;
@@ -48,12 +49,15 @@ export class WarehouseScene {
     this.spot1.shadow.mapSize.height = 2048;
     this.spot2.shadow.mapSize.width = 2048;
     this.spot2.shadow.mapSize.height = 2048;
+    this.spot1.shadow.bias = -0.0005;
+    this.spot2.shadow.bias = -0.0005;
 
     this.scene.add(this.ambient);
     this._testBox = new TestBoxManager(this.scene);
     this._boxManager = new BoxManager(this.scene, rows, columns);
 
     this.renderer.shadowMap.enabled = true;
+    this.renderer.shadowMap.type = PCFSoftShadowMap;
   }
 
   setDimensions(width: number, height: number) {
@@ -149,10 +153,7 @@ export class WarehouseScene {
       [this.spot2, spotlight2Placeholder, spotlight2Placeholder?.position],
     ];
 
-    data.scene.children.forEach((object) => {
-      object.receiveShadow = true;
-      object.occlusionTest = true;
-    });
+    enableShadowsForGroup(data.scene);
 
     settings.forEach(([light, object, position]) => {
       if (!position) return;
