@@ -7,18 +7,21 @@ export class ShelvesScene {
   private box: Group<Object3DEventMap>;
   private room: Group<Object3DEventMap>;
   private ambientLight: AmbientLight;
+  private beforeRender: () => void;
 
   constructor(
     renderer: WebGLRenderer,
     camera: PerspectiveCamera,
     box: Group<Object3DEventMap>,
     room: Group<Object3DEventMap>,
+    beforeRender: () => void = () => {},
   ) {
     this.scene = new Scene();
     this.camera = camera;
     this.renderer = renderer;
     this.box = box;
     this.room = room;
+    this.beforeRender = beforeRender;
     this.ambientLight = new AmbientLight(0xffffff, 1);
 
     this.setup();
@@ -35,6 +38,7 @@ export class ShelvesScene {
   }
 
   private render() {
+    this.beforeRender();
     this.renderer.render(this.scene, this.camera);
   }
 }

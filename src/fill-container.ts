@@ -1,11 +1,12 @@
-type HandlerFn = (dims: DOMRectReadOnly) => void;
+type ListenerArg = { width: number, height: number };
+type HandlerFn = (dims: ListenerArg) => void;
 
 export class FillContainer {
   private dom?: HTMLElement;
   private handler: HandlerFn;
   private resizeObserver: ResizeObserver;
 
-  constructor(handler: (dims: DOMRectReadOnly) => void) {
+  constructor(handler: (dims: ListenerArg) => void) {
     this.handler = handler;
     this.resizeObserver = new ResizeObserver((entries) => {
       for (const entry of entries) {
@@ -25,7 +26,7 @@ export class FillContainer {
     this.resizeObserver.observe(this.dom);
   }
 
-  onResize(size: DOMRectReadOnly) {
+  onResize(size: ListenerArg) {
     this.handler.call(undefined, size);
   }
 
