@@ -1,6 +1,7 @@
-import { AmbientLight, Color, Light, Object3D, PerspectiveCamera, Scene, SpotLight, type Group, type Object3DEventMap, type WebGLRenderer } from "three";
+import { AmbientLight, Color, Light, Mesh, Object3D, PerspectiveCamera, Scene, SpotLight, type Group, type Object3DEventMap, type WebGLRenderer } from "three";
 import type { GlobalSettings } from "./global-settings";
 import { ShadowToggle } from "./shadow-toggle";
+import { TestCubeManager } from "./test-cube-manager";
 
 export class ShelvesScene {
   private scene: Scene;
@@ -13,6 +14,7 @@ export class ShelvesScene {
   private beforeRender: () => void;
   private settings: GlobalSettings;
   private shadowToggle: ShadowToggle;
+  private testCubeManager: TestCubeManager;
 
   constructor(
     renderer: WebGLRenderer,
@@ -31,6 +33,7 @@ export class ShelvesScene {
     this.settings = settings;
     this.ambientLight = new AmbientLight(0xffffff, 1);
     this.shadowToggle = new ShadowToggle(this.renderer, false);
+    this.testCubeManager = new TestCubeManager(this.scene, this.box.children[0] as Mesh);
     this.setup();
   }
 
@@ -46,7 +49,9 @@ export class ShelvesScene {
     this.shadowToggle.addCamera(this.camera);
     this.shadowToggle.addLight(...this.lights);
     this.shadowToggle.addObject(...this.room.children);
+    this.shadowToggle.addObject(...this.box.children);
     this.settings.subscribe<boolean>('shadows', this.onShadowSettings.bind(this));
+    this.settings.subscribe<boolean>('testCube', this.onTestCube.bind(this));
 
     this.renderer.setAnimationLoop(this.render.bind(this));
   }
@@ -77,5 +82,9 @@ export class ShelvesScene {
     this.scene.remove(this.room);
     this.shadowToggle.toggle(state);
     this.scene.add(this.room);
+  }
+
+  onTestCube(state: boolean) {
+    state ? this.testCubeManager.setup() : this.testCubeManager.teardown();
   }
 }
