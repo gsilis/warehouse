@@ -2,6 +2,7 @@ import { AmbientLight, Color, Light, Mesh, Object3D, PerspectiveCamera, Scene, S
 import type { GlobalSettings } from "./global-settings";
 import { ShadowToggle } from "./shadow-toggle";
 import { TestCubeManager } from "./test-cube-manager";
+import { LightHelperManager } from "./light-helper-manager";
 
 export class ShelvesScene {
   private scene: Scene;
@@ -15,6 +16,7 @@ export class ShelvesScene {
   private settings: GlobalSettings;
   private shadowToggle: ShadowToggle;
   private testCubeManager: TestCubeManager;
+  private lightHelperManager: LightHelperManager;
 
   constructor(
     renderer: WebGLRenderer,
@@ -34,6 +36,7 @@ export class ShelvesScene {
     this.ambientLight = new AmbientLight(0xffffff, 1);
     this.shadowToggle = new ShadowToggle(this.renderer, false);
     this.testCubeManager = new TestCubeManager(this.scene, this.box.children[0] as Mesh);
+    this.lightHelperManager = new LightHelperManager(this.scene, false);
     this.setup();
   }
 
@@ -52,6 +55,7 @@ export class ShelvesScene {
     this.shadowToggle.addObject(...this.box.children);
     this.settings.subscribe<boolean>('shadows', this.onShadowSettings.bind(this));
     this.settings.subscribe<boolean>('testCube', this.onTestCube.bind(this));
+    this.settings.subscribe<boolean>('lightHelpers', this.onLightHelpers.bind(this));
 
     this.renderer.setAnimationLoop(this.render.bind(this));
   }
@@ -68,9 +72,11 @@ export class ShelvesScene {
     const color = new Color();
     const light = new SpotLight(color.setHex(0xf5ddb5), 200, 20, Math.PI / 3.2, 0, 2);
     light.position.set(placeholder.position.x, placeholder.position.y, placeholder.position.z);
+    light.target.position.set(placeholder.position.x, 0, placeholder.position.z);
 
     this.scene.add(light);
     this.lights.push(light);
+    this.lightHelperManager.addSpotLight(light);
   }
 
   private render() {
@@ -86,5 +92,9 @@ export class ShelvesScene {
 
   onTestCube(state: boolean) {
     state ? this.testCubeManager.setup() : this.testCubeManager.teardown();
+  }
+
+  onLightHelpers(state: boolean) {
+    this.lightHelperManager.toggle(state);
   }
 }
