@@ -70,7 +70,7 @@ export class ShelvesScene {
 
   private replaceLight(placeholder: Object3D<Object3DEventMap>) {
     const color = new Color();
-    const light = new SpotLight(color.setHex(0xf5ddb5), 200, 20, Math.PI / 3.2, 0, 2);
+    const light = new SpotLight(color.setHex(0xf5ddb5), 200, 20, Math.PI / 3, 0, 2);
     light.position.set(placeholder.position.x, placeholder.position.y, placeholder.position.z);
     light.target.position.set(placeholder.position.x, 0, placeholder.position.z);
 
