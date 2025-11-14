@@ -27,3 +27,17 @@ export function change(oldArray: boolean[], newArray: boolean[]): boolean[] {
 
   return arr;
 }
+
+export function all(array: any[], value: any): boolean {
+  let good = true;
+
+  array.forEach(v => {
+    if (v !== value) good = false;
+  });
+
+  return good;
+}
+
+export function sum(array: number[]): number {
+  return array.reduce((acc, num) => acc + num, 0);
+}
