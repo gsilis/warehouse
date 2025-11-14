@@ -4,12 +4,14 @@ export type SettingsShape = {
   lightHelpers: boolean,
   testCube: boolean,
   planeHelpers: boolean,
+  shadows: boolean,
 };
 
 const defaultSettings: SettingsShape = {
   lightHelpers: false,
   testCube: false,
   planeHelpers: false,
+  shadows: true,
 };
 
 type WorldSettingsContextShape = SettingsShape & {
@@ -26,9 +28,9 @@ export function WorldSettingsProvider({ children }: { children: any }) {
     lightHelpers: false,
     testCube: false,
     planeHelpers: false,
+    shadows: true,
   });
   const update = useCallback((key: keyof SettingsShape, value: boolean) => {
-    console.log(key, value);
     updateSettings((o) => {
       return {
         ...o,
@@ -41,6 +43,7 @@ export function WorldSettingsProvider({ children }: { children: any }) {
     lightHelpers: settings.lightHelpers,
     testCube: settings.testCube,
     planeHelpers: settings.planeHelpers,
+    shadows: settings.shadows,
     update,
   };
 

@@ -3,9 +3,10 @@ import { AssetsLoader } from "./assets-loader";
 import { AssetLoader } from "./asset-loader";
 import { Timer } from "./utilities/timer";
 import { ShelvesScene } from "./shelves.scene";
-import type { OrbitControls } from "three/examples/jsm/Addons.js";
+import type { GlobalSettings } from "./global-settings";
 
 export class WarehouseScene {
+  private settings: GlobalSettings;
   private renderer: WebGLRenderer;
   private camera: PerspectiveCamera;
   private loaders: AssetsLoader;
@@ -16,9 +17,12 @@ export class WarehouseScene {
     renderer: WebGLRenderer,
     camera: PerspectiveCamera,
     beforeRender: () => void = () => {},
+    settings: GlobalSettings,
   ) {
     this.timer = new Timer('GLB Asset loader');
     this.timer.start();
+
+    this.settings = settings;
     this.renderer = renderer;
     this.camera = camera;
     this.beforeRender = beforeRender;
@@ -47,6 +51,6 @@ export class WarehouseScene {
     const box = boxPackage.scene;
     const room = roomPackage.scene;
 
-    new ShelvesScene(this.renderer, this.camera, box, room, this.beforeRender);
+    new ShelvesScene(this.renderer, this.camera, box, room, this.beforeRender, this.settings);
   }
 }

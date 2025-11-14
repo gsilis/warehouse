@@ -14,5 +14,6 @@ export function Controls() {
     <FlagToggle name={ 'lightHelpers' }>Light Helpers</FlagToggle>
     <FlagToggle name={ 'testCube' }>Test Cube</FlagToggle>
     <FlagToggle name={ 'planeHelpers' }>Plane Helpers</FlagToggle>
+    <FlagToggle name={ 'shadows' }>Shadows</FlagToggle>
   </div>;
 }
