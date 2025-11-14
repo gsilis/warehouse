@@ -1,5 +1,4 @@
 import { AmbientLight, PerspectiveCamera, Scene, type Group, type Object3DEventMap, type WebGLRenderer } from "three";
-import { OrbitControls } from "three/examples/jsm/Addons.js";
 
 export class ShelvesScene {
   private scene: Scene;
@@ -8,27 +7,28 @@ export class ShelvesScene {
   private box: Group<Object3DEventMap>;
   private room: Group<Object3DEventMap>;
   private ambientLight: AmbientLight;
-  private orbitControls: OrbitControls;
 
   constructor(
     renderer: WebGLRenderer,
+    camera: PerspectiveCamera,
     box: Group<Object3DEventMap>,
     room: Group<Object3DEventMap>,
   ) {
     this.scene = new Scene();
-    this.camera = new PerspectiveCamera();
+    this.camera = camera;
     this.renderer = renderer;
     this.box = box;
     this.room = room;
-    this.ambientLight = new AmbientLight(0xffffff, 20);
-    this.orbitControls = new OrbitControls(this.camera, this.renderer.domElement);
+    this.ambientLight = new AmbientLight(0xffffff, 1);
 
     this.setup();
   }
 
   private setup() {
-    this.camera.position.z = -4;
-    this.orbitControls.update();
+    this.camera.position.set(10.800573516263025, 15.235058507616007, 26.01630722640751);
+    this.camera.rotateX(-0.3054604194122528);
+    this.camera.rotateY(0.4141117780464906);
+    this.camera.rotateZ(0.12620688296863003);
     this.scene.add(this.ambientLight);
     this.scene.add(this.room);
     this.renderer.setAnimationLoop(this.render.bind(this));

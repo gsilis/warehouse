@@ -1,4 +1,4 @@
-import type { WebGLRenderer } from "three";
+import type { PerspectiveCamera, WebGLRenderer } from "three";
 import { AssetsLoader } from "./assets-loader";
 import { AssetLoader } from "./asset-loader";
 import { Timer } from "./utilities/timer";
@@ -6,15 +6,18 @@ import { ShelvesScene } from "./shelves.scene";
 
 export class WarehouseScene {
   private renderer: WebGLRenderer;
+  private camera: PerspectiveCamera;
   private loaders: AssetsLoader;
   private timer: Timer;
 
   constructor(
-    renderer: WebGLRenderer
+    renderer: WebGLRenderer,
+    camera: PerspectiveCamera,
   ) {
     this.timer = new Timer('GLB Asset loader');
     this.timer.start();
     this.renderer = renderer;
+    this.camera = camera;
     this.loaders = new AssetsLoader();
     this.loaders.add('box', new AssetLoader('/box.glb'));
     this.loaders.add('room', new AssetLoader('/warehouse.glb'));
@@ -39,6 +42,6 @@ export class WarehouseScene {
     const box = boxPackage.scene;
     const room = roomPackage.scene;
 
-    new ShelvesScene(this.renderer, box, room);
+    new ShelvesScene(this.renderer, this.camera, box, room);
   }
 }

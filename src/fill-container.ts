@@ -1,10 +1,12 @@
+type HandlerFn = (dims: DOMRectReadOnly) => void;
+
 export class FillContainer {
   private dom?: HTMLElement;
-  private canvas: HTMLCanvasElement;
+  private handler: HandlerFn;
   private resizeObserver: ResizeObserver;
 
-  constructor(canvas: HTMLCanvasElement) {
-    this.canvas = canvas;
+  constructor(handler: (dims: DOMRectReadOnly) => void) {
+    this.handler = handler;
     this.resizeObserver = new ResizeObserver((entries) => {
       for (const entry of entries) {
         if (entry.contentRect) {
@@ -24,8 +26,7 @@ export class FillContainer {
   }
 
   onResize(size: DOMRectReadOnly) {
-    this.canvas.width = size.width;
-    this.canvas.height = size.height;
+    this.handler.call(undefined, size);
   }
 
   teardown() {
