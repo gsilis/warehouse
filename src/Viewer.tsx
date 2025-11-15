@@ -44,7 +44,7 @@ export function Viewer() {
     });
     new WarehouseScene(renderer, camera, () => {
       controls.update();
-    }, settings);
+    }, settings, controls);
     dom.appendChild(renderer.domElement);
     container.watch(dom);
   }, [elementRef.current, initRef.current, settingsContext, boxContext]);

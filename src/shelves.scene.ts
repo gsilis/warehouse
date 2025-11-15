@@ -1,4 +1,4 @@
-import { AmbientLight, Color, Mesh, Object3D, PerspectiveCamera, Scene, SpotLight, Vector3, type Group, type Object3DEventMap, type WebGLRenderer } from "three";
+import { AmbientLight, Color, Fog, FogExp2, Mesh, Object3D, PerspectiveCamera, Scene, SpotLight, Vector3, type Group, type Object3DEventMap, type WebGLRenderer } from "three";
 import type { GlobalSettings } from "./global-settings";
 import { ShadowToggle } from "./shadow-toggle";
 import { TestCubeManager } from "./test-cube-manager";
@@ -7,6 +7,7 @@ import { ShelfManager } from "./shelf-manager";
 import { CoordinateFactory } from "./cordinate-factory";
 import { BoxFactory } from "./box-factory";
 import { ShelfHelperManager } from "./shelf-helper-manager";
+import type { OrbitControls } from "three/examples/jsm/Addons.js";
 
 export class ShelvesScene {
   private scene: Scene;
@@ -25,6 +26,7 @@ export class ShelvesScene {
   private coordinateFactory: CoordinateFactory;
   private boxFactory: BoxFactory;
   private shelfHelperManager: ShelfHelperManager;
+  private controls?: OrbitControls;
 
   constructor(
     renderer: WebGLRenderer,
@@ -33,6 +35,7 @@ export class ShelvesScene {
     room: Group<Object3DEventMap>,
     beforeRender: () => void = () => {},
     settings: GlobalSettings,
+    controls?: OrbitControls
   ) {
     this.scene = new Scene();
     this.camera = camera;
@@ -41,6 +44,7 @@ export class ShelvesScene {
     this.room = room;
     this.beforeRender = beforeRender;
     this.settings = settings;
+    this.controls = controls;
     this.ambientLight = new AmbientLight(0xffffff, 1);
     this.shadowToggle = new ShadowToggle(this.renderer, false);
     this.testCubeManager = new TestCubeManager(this.scene, this.box.children[0] as Mesh);
@@ -60,6 +64,10 @@ export class ShelvesScene {
     this.scene.add(this.ambientLight);
     this.scene.add(this.room);
 
+    if (this.controls) {
+      this.controls.target.y = 10;
+    }
+
     this.replaceLights();
     this.shadowToggle.addCamera(this.camera);
     this.shadowToggle.addLight(...this.lights);
@@ -70,6 +78,7 @@ export class ShelvesScene {
     this.settings.subscribe<boolean>('lightHelpers', this.onLightHelpers.bind(this));
     this.settings.subscribe<number[]>('boxes', this.onBoxes.bind(this));
     this.settings.subscribe<boolean>('planeHelpers', this.onPlaneHelper.bind(this));
+    this.addFog();
 
     this.renderer.setAnimationLoop(this.render.bind(this));
   }
@@ -98,25 +107,29 @@ export class ShelvesScene {
     this.renderer.render(this.scene, this.camera);
   }
 
-  onShadowSettings(state: boolean) {
+  private addFog() {
+    this.scene.fog = new FogExp2(0xFFFFFF, 0.003);
+  }
+
+  private onShadowSettings(state: boolean) {
     this.scene.remove(this.room);
     this.shadowToggle.toggle(state);
     this.scene.add(this.room);
   }
 
-  onTestCube(state: boolean) {
+  private onTestCube(state: boolean) {
     state ? this.testCubeManager.setup() : this.testCubeManager.teardown();
   }
 
-  onLightHelpers(state: boolean) {
+  private onLightHelpers(state: boolean) {
     this.lightHelperManager.toggle(state);
   }
 
-  onBoxes(value: number[]) {
+  private onBoxes(value: number[]) {
     this.shelfManager.update(value);
   }
 
-  onPlaneHelper(value: boolean) {
+  private onPlaneHelper(value: boolean) {
     this.shelfHelperManager.toggle(value);
   }
 }
