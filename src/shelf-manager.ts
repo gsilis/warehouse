@@ -7,7 +7,7 @@ export class ShelfManager {
   private settings: number[];
   private currentObjects: Record<number, Mesh> = {};
 
-  constructor(scene: Scene, boxFactory, settings: number[] = []) {
+  constructor(scene: Scene, boxFactory: BoxFactory, settings: number[] = []) {
     this.scene = scene;
     this.boxFactory = boxFactory;
     this.settings = settings;
