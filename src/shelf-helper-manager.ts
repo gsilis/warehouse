@@ -1,4 +1,4 @@
-import { BoxGeometry, BoxHelper, Color, Mesh, MeshBasicMaterial, Plane, PlaneGeometry, PlaneHelper, Vector3, type Scene } from "three";
+import { BoxGeometry, BoxHelper, Color, Mesh, type Scene } from "three";
 import type { CoordinateFactory } from "./cordinate-factory";
 
 const SHELF_PLANE_COLOR = (new Color()).setHex(0x00FF00);

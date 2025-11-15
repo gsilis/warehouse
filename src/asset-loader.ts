@@ -1,4 +1,4 @@
-import { Observable, type Observer, type Subscriber, type Subscription } from "rxjs";
+import { Observable, type Observer, type Subscription } from "rxjs";
 import { type GLTF, GLTFLoader } from "three/examples/jsm/Addons.js";
 
 export type AssetLoaderData = { asset: GLTF | null, bytesLoaded: number, bytesTotal: number };

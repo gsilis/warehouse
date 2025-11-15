@@ -1,4 +1,4 @@
-import { Color, PointLightHelper, SpotLightHelper, type Light, type PointLight, type Scene, type SpotLight } from "three";
+import { Color, PointLightHelper, SpotLightHelper, type PointLight, type Scene, type SpotLight } from "three";
 
 const COLOR = (new Color()).setHex(0xFFFF00);
 

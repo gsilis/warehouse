@@ -1,4 +1,4 @@
-import { AmbientLight, Color, Fog, FogExp2, Mesh, Object3D, PerspectiveCamera, Scene, SpotLight, Vector3, type Group, type Object3DEventMap, type WebGLRenderer } from "three";
+import { AmbientLight, Color, FogExp2, Mesh, Object3D, PerspectiveCamera, Scene, SpotLight, Vector3, type Group, type Object3DEventMap, type WebGLRenderer } from "three";
 import type { GlobalSettings } from "./global-settings";
 import { ShadowToggle } from "./shadow-toggle";
 import { TestCubeManager } from "./test-cube-manager";

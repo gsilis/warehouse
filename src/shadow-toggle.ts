@@ -55,7 +55,7 @@ export class ShadowToggle {
     }
   }
 
-  private applyShadowToCamera(camera: Camera) {}
+  private applyShadowToCamera(_camera: Camera) {}
 
   private applyRenderer() {
     this.renderer.shadowMap.enabled = this.state;
