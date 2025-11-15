@@ -1,4 +1,4 @@
-import { AmbientLight, Color, Light, Mesh, Object3D, PerspectiveCamera, Scene, SpotLight, type Group, type Object3DEventMap, type WebGLRenderer } from "three";
+import { AmbientLight, Color, Mesh, Object3D, PerspectiveCamera, Scene, SpotLight, Vector3, type Group, type Object3DEventMap, type WebGLRenderer } from "three";
 import type { GlobalSettings } from "./global-settings";
 import { ShadowToggle } from "./shadow-toggle";
 import { TestCubeManager } from "./test-cube-manager";
@@ -43,7 +43,7 @@ export class ShelvesScene {
     this.shadowToggle = new ShadowToggle(this.renderer, false);
     this.testCubeManager = new TestCubeManager(this.scene, this.box.children[0] as Mesh);
     this.lightHelperManager = new LightHelperManager(this.scene, false);
-    this.coordinateFactory = new CoordinateFactory(2, 5);
+    this.coordinateFactory = new CoordinateFactory(2, 5, new Vector3(-4, 1.68, -1.75), new Vector3(4.49, 1.68, -3.85), 2.27);
     this.boxFactory = new BoxFactory(this.box.children[0] as Mesh, this.coordinateFactory);
     this.shelfManager = new ShelfManager(this.scene, this.boxFactory);
     this.setup();
@@ -65,7 +65,7 @@ export class ShelvesScene {
     this.settings.subscribe<boolean>('shadows', this.onShadowSettings.bind(this));
     this.settings.subscribe<boolean>('testCube', this.onTestCube.bind(this));
     this.settings.subscribe<boolean>('lightHelpers', this.onLightHelpers.bind(this));
-    this.settings.subscribe<boolean[]>('boxes', this.onBoxes.bind(this));
+    this.settings.subscribe<number[]>('boxes', this.onBoxes.bind(this));
 
     this.renderer.setAnimationLoop(this.render.bind(this));
   }
@@ -108,7 +108,7 @@ export class ShelvesScene {
     this.lightHelperManager.toggle(state);
   }
 
-  onBoxes(value: boolean[]) {
+  onBoxes(value: number[]) {
     this.shelfManager.update(value);
   }
 }
