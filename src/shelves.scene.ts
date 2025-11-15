@@ -6,6 +6,7 @@ import { LightHelperManager } from "./light-helper-manager";
 import { ShelfManager } from "./shelf-manager";
 import { CoordinateFactory } from "./cordinate-factory";
 import { BoxFactory } from "./box-factory";
+import { ShelfHelperManager } from "./shelf-helper-manager";
 
 export class ShelvesScene {
   private scene: Scene;
@@ -23,6 +24,7 @@ export class ShelvesScene {
   private shelfManager: ShelfManager;
   private coordinateFactory: CoordinateFactory;
   private boxFactory: BoxFactory;
+  private shelfHelperManager: ShelfHelperManager;
 
   constructor(
     renderer: WebGLRenderer,
@@ -46,6 +48,7 @@ export class ShelvesScene {
     this.coordinateFactory = new CoordinateFactory(2, 5, new Vector3(-4, 1.68, -1.75), new Vector3(4.49, 1.68, -3.85), 2.27);
     this.boxFactory = new BoxFactory(this.box.children[0] as Mesh, this.coordinateFactory);
     this.shelfManager = new ShelfManager(this.scene, this.boxFactory);
+    this.shelfHelperManager = new ShelfHelperManager(this.scene, this.coordinateFactory, false, 3, 2, 5);
     this.setup();
   }
 
@@ -66,6 +69,7 @@ export class ShelvesScene {
     this.settings.subscribe<boolean>('testCube', this.onTestCube.bind(this));
     this.settings.subscribe<boolean>('lightHelpers', this.onLightHelpers.bind(this));
     this.settings.subscribe<number[]>('boxes', this.onBoxes.bind(this));
+    this.settings.subscribe<boolean>('planeHelpers', this.onPlaneHelper.bind(this));
 
     this.renderer.setAnimationLoop(this.render.bind(this));
   }
@@ -110,5 +114,9 @@ export class ShelvesScene {
 
   onBoxes(value: number[]) {
     this.shelfManager.update(value);
+  }
+
+  onPlaneHelper(value: boolean) {
+    this.shelfHelperManager.toggle(value);
   }
 }

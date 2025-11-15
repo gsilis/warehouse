@@ -20,8 +20,6 @@ export class CoordinateFactory {
     this.indicesPerShelf = this.rows * this.columns;
     const zDiff = this.end.z - this.start.z;
     const xDiff = this.end.x - this.start.x;
-    const zMulti = zDiff / zDiff;
-    const xMulti = xDiff / xDiff;
 
     this.zSize = zDiff/ (this.rows - 1);
     this.xSize = xDiff / (this.columns - 1);
