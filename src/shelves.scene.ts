@@ -3,6 +3,9 @@ import type { GlobalSettings } from "./global-settings";
 import { ShadowToggle } from "./shadow-toggle";
 import { TestCubeManager } from "./test-cube-manager";
 import { LightHelperManager } from "./light-helper-manager";
+import { ShelfManager } from "./shelf-manager";
+import { CoordinateFactory } from "./cordinate-factory";
+import { BoxFactory } from "./box-factory";
 
 export class ShelvesScene {
   private scene: Scene;
@@ -17,6 +20,9 @@ export class ShelvesScene {
   private shadowToggle: ShadowToggle;
   private testCubeManager: TestCubeManager;
   private lightHelperManager: LightHelperManager;
+  private shelfManager: ShelfManager;
+  private coordinateFactory: CoordinateFactory;
+  private boxFactory: BoxFactory;
 
   constructor(
     renderer: WebGLRenderer,
@@ -37,6 +43,9 @@ export class ShelvesScene {
     this.shadowToggle = new ShadowToggle(this.renderer, false);
     this.testCubeManager = new TestCubeManager(this.scene, this.box.children[0] as Mesh);
     this.lightHelperManager = new LightHelperManager(this.scene, false);
+    this.coordinateFactory = new CoordinateFactory(2, 5);
+    this.boxFactory = new BoxFactory(this.box.children[0] as Mesh, this.coordinateFactory);
+    this.shelfManager = new ShelfManager(this.scene, this.boxFactory);
     this.setup();
   }
 
@@ -56,6 +65,7 @@ export class ShelvesScene {
     this.settings.subscribe<boolean>('shadows', this.onShadowSettings.bind(this));
     this.settings.subscribe<boolean>('testCube', this.onTestCube.bind(this));
     this.settings.subscribe<boolean>('lightHelpers', this.onLightHelpers.bind(this));
+    this.settings.subscribe<boolean[]>('boxes', this.onBoxes.bind(this));
 
     this.renderer.setAnimationLoop(this.render.bind(this));
   }
@@ -96,5 +106,9 @@ export class ShelvesScene {
 
   onLightHelpers(state: boolean) {
     this.lightHelperManager.toggle(state);
+  }
+
+  onBoxes(value: boolean[]) {
+    this.shelfManager.update(value);
   }
 }
