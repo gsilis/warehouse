@@ -3,7 +3,7 @@ import { createContext, useCallback, useState } from "react";
 export const SHELF_ROWS = 2;
 export const SHELF_COLUMNS = 5;
 
-const INITIAL_VALUE = [0, 5, 1];
+const INITIAL_VALUE = [0, 5, 7, 25];
 
 type BoxContextShape = {
   boxes: number[],
