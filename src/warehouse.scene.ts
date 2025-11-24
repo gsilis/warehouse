@@ -32,8 +32,8 @@ export class WarehouseScene {
     this.beforeRender = beforeRender;
 
     this.loaders = new AssetsLoader();
-    this.loaders.add('box', new AssetLoader('/box.glb'));
-    this.loaders.add('room', new AssetLoader('/warehouse.glb'));
+    this.loaders.add('box', new AssetLoader('./box.glb'));
+    this.loaders.add('room', new AssetLoader('./warehouse.glb'));
     this.loaders.subscribe({
       next: () => {},
       complete: this.onComplete.bind(this),
